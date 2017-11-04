@@ -158,6 +158,7 @@ batch_size = 32
 
 num_layers = 2
 state_size = 250
+dropout_prob = 0.5
 
 X_ph = tf.placeholder(tf.int32, [None, None])
 Y_ph = tf.placeholder(tf.int32, [None, None])
@@ -282,7 +283,7 @@ def optimize(sess, num_epochs):
             sess.run(optimizer,
                      feed_dict={ X_ph: x_batch["X_ph"],
                                  Y_ph: y_batch["Y_ph"],
-                                 keep_prob_ph: num_probs,
+                                 keep_prob_ph:dropout_prob,
                              }
                      )
             
