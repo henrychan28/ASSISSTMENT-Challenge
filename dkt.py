@@ -156,8 +156,8 @@ return :
 
 batch_size = 32
 
-num_layers = 1
-state_size = 200
+num_layers = 2
+state_size = 250
 
 X_ph = tf.placeholder(tf.int32, [None, None])
 Y_ph = tf.placeholder(tf.int32, [None, None])
@@ -298,7 +298,7 @@ def optimize(sess, num_epochs):
                 auc_train = evaluate(sess, mode=-1)
                 auc_test = evaluate(sess, mode=0)
                 print(("[eval] Epoch {0:>4}, train auc {1:.5}, test auc: {2:.5}".format(idx_epoch, auc_train, auc_test)))
-                save_path = saver.save(sess, "/model.ckpt")
+                save_path = saver.save(sess, "./saved_model/model.ckpt")
                 print("Model saved in file: %s" % save_path)
 
 
@@ -339,8 +339,8 @@ def extraction(sess, data):
 
 
 
-WITH_CONFIG = True
-num_epochs = 100
+WITH_CONFIG = False
+num_epochs = 2000
 
 
 
@@ -358,13 +358,13 @@ if WITH_CONFIG:
     config.gpu_options.visible_device_list = '1'
     with tf.Session(config=config) as sess:
         if restore:
-            saver.restore(sess, "/model.ckpt")
+            saver.restore(sess, "./saved_model/model.ckpt")
         sess.run(tf.global_variables_initializer())
         optimize(sess, num_epochs)
 else:
     with tf.Session() as sess:
         if restore:
-            saver.restore(sess, "/model.ckpt")
+            saver.restore(sess, "./saved_model/model.ckpt")
         sess.run(tf.global_variables_initializer())
         optimize(sess, num_epochs)
 
