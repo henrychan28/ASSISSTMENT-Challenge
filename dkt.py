@@ -281,7 +281,7 @@ def optimize(sess, num_epochs):
 
 
 WITH_CONFIG = True
-num_epochs = 20
+num_epochs = 10
 
 start_time = time.time()
 if WITH_CONFIG:
