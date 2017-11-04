@@ -294,13 +294,11 @@ def optimize(sess, num_epochs):
                                                     }
                                         )
                 print(("Epoch {0:>4}, iteration {1:>4}, batch loss value: {2:.5}".format(idx_epoch, idx_batch, total_loss_eval)))
-                save_path = saver.save(sess, "/saved_model/model.ckpt")
-                print("Model saved in file: %s" % save_path)
             if end_batch:
                 auc_train = evaluate(sess, mode=-1)
                 auc_test = evaluate(sess, mode=0)
                 print(("[eval] Epoch {0:>4}, train auc {1:.5}, test auc: {2:.5}".format(idx_epoch, auc_train, auc_test)))
-                save_path = saver.save(sess, "/saved_model/model.ckpt")
+                save_path = saver.save(sess, "/model.ckpt")
                 print("Model saved in file: %s" % save_path)
 
 
@@ -360,13 +358,13 @@ if WITH_CONFIG:
     config.gpu_options.visible_device_list = '1'
     with tf.Session(config=config) as sess:
         if restore:
-            saver.restore(sess, "/saved_model/model.ckpt")
+            saver.restore(sess, "/model.ckpt")
         sess.run(tf.global_variables_initializer())
         optimize(sess, num_epochs)
 else:
     with tf.Session() as sess:
         if restore:
-            saver.restore(sess, "/saved_model/model.ckpt")
+            saver.restore(sess, "/model.ckpt")
         sess.run(tf.global_variables_initializer())
         optimize(sess, num_epochs)
 
