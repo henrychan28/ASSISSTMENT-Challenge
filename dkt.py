@@ -299,7 +299,7 @@ def optimize(sess, num_epochs):
                 auc_train = evaluate(sess, mode=-1)
                 auc_test = evaluate(sess, mode=0)
                 print(("[eval] Epoch {0:>4}, train auc {1:.5}, test auc: {2:.5}".format(idx_epoch, auc_train, auc_test)))
-                save_path = saver.save(sess, "./saved_model/model.ckpt")
+                save_path = saver.save(sess, "./saved_model/model")
                 print("Model saved in file: %s" % save_path)
 
 
@@ -340,13 +340,13 @@ def extraction(sess, data):
 
 
 
-WITH_CONFIG = False
+WITH_CONFIG = True
 num_epochs = 2000
 
 
 
 #Restore Model
-restore = 0  #0: not restore, 1: restore
+restore = 1  #0: not restore, 1: restore
 saver = tf.train.Saver()
 
 
@@ -359,13 +359,15 @@ if WITH_CONFIG:
     config.gpu_options.visible_device_list = '1'
     with tf.Session(config=config) as sess:
         if restore:
-            saver.restore(sess, "./saved_model/model.ckpt")
+	    #print("Restoring model from ./saved_model/model.meta")
+            saver.restore(sess, "./saved_model/model.meta")
         sess.run(tf.global_variables_initializer())
         optimize(sess, num_epochs)
 else:
     with tf.Session() as sess:
         if restore:
-            saver.restore(sess, "./saved_model/model.ckpt")
+            #print("Restoring model from ./saved_model/model.meta")
+            saver.restore(sess, "./saved_model/model.meta")
         sess.run(tf.global_variables_initializer())
         optimize(sess, num_epochs)
 
