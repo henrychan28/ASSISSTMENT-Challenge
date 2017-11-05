@@ -344,15 +344,16 @@ def extraction(sess, data):
 
 
 WITH_CONFIG = True
-num_epochs = 1
+num_epochs = 10
 
 
 
 #Restore Model
-restore = 0  #0: not restore, 1: restore
+restore = 1  #0: not restore, 1: restore
 saver = tf.train.Saver()
 if restore:
-    imported_meta = tf.train.import_meta_graph("saved_model/model.meta")
+    print("Importing meta graph from ./saved_model/model.ckpt.meta")
+    imported_meta = tf.train.import_meta_graph("./saved_model/model.ckpt.meta")
 
 
 start_time = time.time()
@@ -364,13 +365,15 @@ if WITH_CONFIG:
     with tf.Session(config=config) as sess:
         sess.run(tf.global_variables_initializer())
         if restore:
-            imported_meta.restore(sess, tf.train.latest_checkpoint("saved_model/model.ckpt"))
+            print("Restoring meta from ./saved_model/model.ckpt")
+            imported_meta.restore(sess, "./saved_model/model.ckpt")
         optimize(sess, num_epochs)
 else:
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         if restore:
-            imported_meta.restore(sess, tf.train.latest_checkpoint("saved_model/model.ckpt"))
+            print("Restoring meta from ./saved_model/model.ckpt")
+            imported_meta.restore(sess, "./saved_model/model.ckpt")
         optimize(sess, num_epochs)
 
 end_time = time.time()
