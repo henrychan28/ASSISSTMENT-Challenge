@@ -153,19 +153,22 @@ return :
 [s, a, b] = -1=> ...... incorrect
 '''
 
-
+###################
+# Hyperparameter###
+###################
 batch_size = 32
-
 num_layers = 2
 state_size = 250
+learning_rate=1e-3
 dropout_prob = 0.5
+###################
 
 X_ph = tf.placeholder(tf.int32, [None, None])
 Y_ph = tf.placeholder(tf.int32, [None, None])
 keep_prob_ph = tf.placeholder(tf.float32)
 
 num_steps = tf.shape(X_ph)[1]
-print(num_steps)
+#print(num_steps)
 X_in, Y_in = seq_onehot(X_ph, Y_ph, num_steps, num_probs)
 
 ## build up the network
@@ -203,7 +206,7 @@ Y_in_selected = tf.gather_nd(Y_in_next, idx_selected)
 loss = -Y_in_selected * tf.log(Y_out_selected) - (1-Y_in_selected) * tf.log(1-Y_out_selected)
 total_loss = tf.reduce_mean(loss)
 
-optimizer = tf.train.AdamOptimizer(learning_rate=1e-3).minimize(total_loss)
+optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(total_loss)
 
 
 ###########################  Mini-batch  ########################### 
@@ -341,14 +344,15 @@ def extraction(sess, data):
 
 
 WITH_CONFIG = True
-num_epochs = 2000
+num_epochs = 200
 
 
 
 #Restore Model
-restore = 1  #0: not restore, 1: restore
+restore = 0  #0: not restore, 1: restore
 saver = tf.train.Saver()
-
+if restore:
+    imported_meta = tf.train.import_meta_graph("./saved_model/model.meta")
 
 
 start_time = time.time()
@@ -359,15 +363,13 @@ if WITH_CONFIG:
     config.gpu_options.visible_device_list = '1'
     with tf.Session(config=config) as sess:
         if restore:
-	    #print("Restoring model from ./saved_model/model.meta")
-            saver.restore(sess, "./saved_model/model.meta")
+            imported_meta.restore(sess, tf.train.latest_checkpoint("./"))
         sess.run(tf.global_variables_initializer())
         optimize(sess, num_epochs)
 else:
     with tf.Session() as sess:
         if restore:
-            #print("Restoring model from ./saved_model/model.meta")
-            saver.restore(sess, "./saved_model/model.meta")
+            imported_meta.restore(sess, tf.train.latest_checkpoint("./"))
         sess.run(tf.global_variables_initializer())
         optimize(sess, num_epochs)
 
