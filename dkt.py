@@ -302,7 +302,7 @@ def optimize(sess, num_epochs):
                 auc_train = evaluate(sess, mode=-1)
                 auc_test = evaluate(sess, mode=0)
                 print(("[eval] Epoch {0:>4}, train auc {1:.5}, test auc: {2:.5}".format(idx_epoch, auc_train, auc_test)))
-                save_path = saver.save(sess, "./saved_model/model")
+                save_path = saver.save(sess, "./saved_model/model.ckpt")
                 print("Model saved in file: %s" % save_path)
 
 
@@ -344,7 +344,7 @@ def extraction(sess, data):
 
 
 WITH_CONFIG = True
-num_epochs = 200
+num_epochs = 1
 
 
 
@@ -352,7 +352,7 @@ num_epochs = 200
 restore = 0  #0: not restore, 1: restore
 saver = tf.train.Saver()
 if restore:
-    imported_meta = tf.train.import_meta_graph("./saved_model/model.meta")
+    imported_meta = tf.train.import_meta_graph("saved_model/model.meta")
 
 
 start_time = time.time()
@@ -360,17 +360,17 @@ if WITH_CONFIG:
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     # specify the GPU to run
-    config.gpu_options.visible_device_list = '1'
+    config.gpu_options.visible_device_list = '0'
     with tf.Session(config=config) as sess:
-        if restore:
-            imported_meta.restore(sess, tf.train.latest_checkpoint("./"))
         sess.run(tf.global_variables_initializer())
+        if restore:
+            imported_meta.restore(sess, tf.train.latest_checkpoint("saved_model/model.ckpt"))
         optimize(sess, num_epochs)
 else:
     with tf.Session() as sess:
-        if restore:
-            imported_meta.restore(sess, tf.train.latest_checkpoint("./"))
         sess.run(tf.global_variables_initializer())
+        if restore:
+            imported_meta.restore(sess, tf.train.latest_checkpoint("saved_model/model.ckpt"))
         optimize(sess, num_epochs)
 
 end_time = time.time()
